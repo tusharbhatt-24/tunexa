@@ -1,0 +1,176 @@
+/* ── ytdl.css — YouTube Downloader specific styles ── */
+
+/* badge */
+.ytdl-badge{background:rgba(255,0,0,.1);border-color:rgba(255,68,68,.3)!important;color:#ff4444!important}
+
+/* nav tab buttons */
+.nav-tab-btn{display:inline-flex;align-items:center;gap:.4rem;font-size:.8rem;font-weight:600;color:#64748b;padding:.35rem .8rem;border-radius:8px;transition:all .2s;border:1px solid transparent}
+.nav-tab-btn:hover{color:#e2e8f0;background:rgba(255,255,255,.06)}
+.nav-tab-btn.active{color:#e2e8f0;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.1)}
+
+/* url row */
+.ytdl-url-row{display:flex;gap:.75rem;align-items:center;flex-wrap:wrap}
+.ytdl-url-row .url-input-wrapper{flex:1;min-width:220px}
+
+/* example pills */
+.ytdl-examples{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:.875rem;padding-top:.875rem;border-top:1px solid rgba(255,255,255,.06)}
+.ytdl-example-label{font-size:.72rem;color:#475569;font-weight:500}
+.ytdl-example-pill{font-size:.72rem;font-weight:500;padding:.25rem .65rem;border-radius:20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#64748b;transition:all .2s;cursor:pointer}
+.ytdl-example-pill:hover{background:rgba(255,68,68,.1);border-color:rgba(255,68,68,.25);color:#ff4444}
+
+/* info row */
+.ytdl-info-row{display:flex;gap:1.25rem;align-items:flex-start;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.ytdl-thumb{width:160px;height:90px;object-fit:cover;border-radius:10px;flex-shrink:0;background:#1e293b}
+.ytdl-meta{flex:1;min-width:0}
+.ytdl-video-title{font-size:1rem;font-weight:700;line-height:1.4;margin-bottom:.35rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ytdl-channel{font-size:.8rem;color:#64748b;margin-bottom:.25rem}
+.ytdl-views{font-size:.75rem;color:#475569}
+
+/* format section */
+.ytdl-format-section{margin-top:.25rem}
+.ytdl-format-tabs{display:flex;gap:.375rem;background:rgba(255,255,255,.04);border-radius:10px;padding:.3rem;margin-bottom:1.25rem;width:fit-content}
+.ytdl-tab{display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;font-weight:600;padding:.45rem 1rem;border-radius:7px;color:#64748b;transition:all .2s}
+.ytdl-tab.active{background:rgba(255,68,68,.12);color:#ff6060;box-shadow:0 0 0 1px rgba(255,68,68,.2)}
+.ytdl-tab:hover:not(.active){color:#94a3b8;background:rgba(255,255,255,.04)}
+
+/* options */
+.ytdl-options{padding-top:.25rem}
+.ytdl-option-label{font-size:.75rem;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;display:block}
+.ytdl-quality-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:.6rem}
+
+.ytdl-quality-item{position:relative;cursor:pointer}
+.ytdl-quality-item input[type=radio]{position:absolute;opacity:0;width:0;height:0}
+.ytdl-quality-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.15rem;padding:.75rem .5rem;border-radius:12px;border:1.5px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);transition:all .2s;cursor:pointer;text-align:center}
+.ytdl-quality-item input:checked + .ytdl-quality-card{border-color:rgba(255,68,68,.4);background:rgba(255,68,68,.08);box-shadow:0 0 0 3px rgba(255,68,68,.1)}
+.ytdl-quality-card:hover{border-color:rgba(255,68,68,.25);background:rgba(255,68,68,.05)}
+.ytdl-q-num{font-size:1.3rem;font-weight:800;line-height:1;color:#e2e8f0}
+.ytdl-q-unit{font-size:.65rem;font-weight:600;color:#64748b;text-transform:uppercase}
+.ytdl-q-tag{font-size:.6rem;font-weight:700;padding:.15rem .4rem;border-radius:4px;text-transform:uppercase;letter-spacing:.04em;margin-top:.1rem}
+.ytdl-q-tag.best{background:rgba(52,211,153,.12);color:#34d399}
+.ytdl-q-tag.high{background:rgba(99,102,241,.12);color:#818cf8}
+.ytdl-q-tag.std{background:rgba(245,158,11,.1);color:#fbbf24}
+.ytdl-q-tag.low{background:rgba(255,255,255,.06);color:#64748b}
+
+/* download button */
+.ytdl-dl-btn{background:linear-gradient(135deg,#dc2626,#ea580c)!important;box-shadow:0 4px 20px rgba(220,38,38,.3)!important}
+.ytdl-dl-btn:hover:not(:disabled){box-shadow:0 8px 30px rgba(220,38,38,.45)!important}
+
+/* progress */
+.ytdl-progress-inner{display:flex;align-items:center;gap:1.25rem;padding:.25rem 0}
+.ytdl-progress-icon-wrap{position:relative;width:56px;height:56px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.ytdl-progress-spinner{position:absolute;inset:0;border-radius:50%;border:3px solid rgba(255,68,68,.15);border-top-color:#ff4444;animation:spin .9s linear infinite}
+.ytdl-progress-dl-icon{color:#ff4444}
+.ytdl-progress-label{font-size:.95rem;font-weight:600}
+.ytdl-prog-fill{background:linear-gradient(90deg,#dc2626,#f59e0b)!important}
+
+/* result */
+.ytdl-result-inner{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.ytdl-result-check{width:52px;height:52px;border-radius:50%;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.25);display:flex;align-items:center;justify-content:center;color:#34d399;flex-shrink:0}
+.ytdl-result-text{flex:1;min-width:0}
+.ytdl-result-title{font-size:1rem;font-weight:700;margin-bottom:.2rem}
+.ytdl-result-meta{font-size:.8rem;color:#64748b}
+.ytdl-dl-final-btn{background:linear-gradient(135deg,#16a34a,#15803d)!important;box-shadow:0 4px 16px rgba(22,163,74,.3)!important;white-space:nowrap}
+.ytdl-dl-final-btn:hover{box-shadow:0 8px 24px rgba(22,163,74,.4)!important;transform:translateY(-2px)}
+
+/* error */
+.ytdl-error-inner{display:flex;align-items:center;gap:1rem;margin-bottom:.25rem}
+.ytdl-error-icon{font-size:2rem;flex-shrink:0}
+
+@media(max-width:600px){
+  .ytdl-thumb{width:120px;height:68px}
+  .ytdl-format-tabs{width:100%}
+  .ytdl-tab{flex:1;justify-content:center}
+  .ytdl-result-inner{flex-direction:column;align-items:stretch;text-align:center}
+  .ytdl-result-check{margin:0 auto}
+  .ytdl-dl-final-btn{width:100%;justify-content:center}
+}
+
+/* Playlist Track Checklist styles */
+.ytdl-playlist-track-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+.ytdl-playlist-track-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+.ytdl-playlist-track-item.disabled {
+  opacity: 0.5;
+}
+
+/* Checkbox container and customization */
+.track-checkbox-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+.track-checkbox-wrapper input[type=checkbox] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.track-checkbox-custom {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.02);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.track-checkbox-wrapper input:checked + .track-checkbox-custom {
+  border-color: #ff4444;
+  background: #ff4444;
+}
+.track-checkbox-wrapper input:checked + .track-checkbox-custom::after {
+  content: "";
+  width: 5px;
+  height: 9px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  margin-bottom: 2px;
+}
+
+.track-index {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #475569;
+  min-width: 16px;
+  text-align: center;
+}
+.track-details {
+  flex: 1;
+  min-width: 0;
+}
+.track-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.track-uploader {
+  font-size: 0.72rem;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.track-duration {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #475569;
+}
+

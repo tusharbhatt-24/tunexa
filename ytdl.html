@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Tunexa Downloader — Download YouTube or Spotify as MP3/MP4</title>
+  <meta name="description" content="Download any YouTube video as MP3 audio or MP4 video. Free, fast, no account needed."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="ytdl.css"/>
+</head>
+<body>
+
+  <div class="ambient-bg">
+    <div class="orb orb-1" style="background:radial-gradient(circle,#dc2626,transparent)"></div>
+    <div class="orb orb-2" style="background:radial-gradient(circle,#f59e0b,transparent)"></div>
+    <div class="orb orb-3" style="background:radial-gradient(circle,#7c3aed,transparent)"></div>
+  </div>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+          </svg>
+        </div>
+        <span>Tunexa</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-tab-btn">Playlist Transfer</a>
+        <a href="ytdl.html" class="nav-tab-btn active">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088C19.537 3.616 12 3.616 12 3.616s-7.537 0-9.407.501A3.007 3.007 0 0 0 .505 6.205 31.247 31.247 0 0 0 0 12a31.247 31.247 0 0 0 .505 5.795 3.007 3.007 0 0 0 2.088 2.088C4.463 20.384 12 20.384 12 20.384s7.537 0 9.407-.501a3.007 3.007 0 0 0 2.088-2.088A31.247 31.247 0 0 0 24 12a31.247 31.247 0 0 0-.505-5.795zM9.609 15.601V8.408l6.264 3.602z"/></svg>
+          YT Downloader
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-container" id="ytdl-app">
+
+    <div class="step-hero">
+      <div class="step-badge ytdl-badge">Media Downloader</div>
+      <h1 class="hero-title">Download YouTube & Spotify</h1>
+      <p class="hero-sub">Paste a YouTube or Spotify link and download it as <strong>MP3</strong> audio or <strong>MP4</strong> video. Powered by yt-dlp & Spotify API.</p>
+    </div>
+
+    <!-- URL INPUT -->
+    <div class="card" id="ytdl-input-card">
+      <div class="ytdl-url-row">
+        <div class="url-input-wrapper" style="flex:1">
+          <input type="url" id="ytdl-url-input" class="url-input"
+            placeholder="Paste a YouTube or Spotify track/playlist link..."
+            autocomplete="off" spellcheck="false" aria-label="Media URL"/>
+          <button class="url-clear-btn" id="ytdl-clear-btn" aria-label="Clear" style="display:none">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <button class="btn btn-primary" id="ytdl-fetch-btn" disabled>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Fetch Info
+        </button>
+      </div>
+      <div class="url-error" id="ytdl-url-error" role="alert" aria-live="assertive"></div>
+
+      <!-- Quick paste examples -->
+      <div class="ytdl-examples">
+        <span class="ytdl-example-label">Try:</span>
+        <button class="ytdl-example-pill" data-url="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Rick Astley</button>
+        <button class="ytdl-example-pill" data-url="https://www.youtube.com/watch?v=9bZkp7q19f0">Gangnam Style</button>
+        <button class="ytdl-example-pill" data-url="https://www.youtube.com/watch?v=kJQP7kiw5Fk">Despacito</button>
+      </div>
+    </div>
+
+    <!-- VIDEO INFO + FORMAT PICKER -->
+    <div class="card hidden" id="ytdl-info-card">
+      <div class="ytdl-info-row">
+        <img id="ytdl-thumb" class="ytdl-thumb" src="" alt="Thumbnail"/>
+        <div class="ytdl-meta">
+          <div class="ytdl-video-title" id="ytdl-video-title">Video Title</div>
+          <div class="ytdl-channel" id="ytdl-channel">Channel · Duration</div>
+          <div class="ytdl-views" id="ytdl-views"></div>
+        </div>
+      </div>
+
+      <!-- Playlist track list checklist -->
+      <div id="ytdl-playlist-container" class="hidden" style="margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 1.25rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+          <h3 style="font-size: 0.9rem; font-weight: 700; color: #e2e8f0; display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+            <span>Playlist Tracks</span>
+            <span id="ytdl-playlist-selected-count" style="font-size: 0.72rem; background: rgba(255,68,68,0.15); color: #ff6060; padding: 0.15rem 0.4rem; border-radius: 4px;">0 Selected</span>
+          </h3>
+          <button class="btn btn-ghost" id="ytdl-playlist-toggle-all" style="font-size: 0.72rem; padding: 0.2rem 0.5rem; height: auto; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px;">
+            Deselect All
+          </button>
+        </div>
+        <div id="ytdl-playlist-tracks" style="max-height: 240px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; padding-right: 0.25rem; margin-bottom: 1.25rem;">
+          <!-- Playlist track items dynamically injected -->
+        </div>
+      </div>
+
+      <!-- Format Tabs -->
+      <div class="ytdl-format-section">
+        <div class="ytdl-format-tabs" role="tablist" aria-label="Download format">
+          <button class="ytdl-tab active" data-type="mp3" id="ytdl-tab-mp3" role="tab" aria-selected="true">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            MP3 Audio
+          </button>
+          <button class="ytdl-tab" data-type="mp4" id="ytdl-tab-mp4" role="tab" aria-selected="false">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+            MP4 Video
+          </button>
+        </div>
+
+        <!-- MP3 quality -->
+        <div id="ytdl-mp3-options" class="ytdl-options">
+          <p class="ytdl-option-label">Audio Bitrate</p>
+          <div class="ytdl-quality-grid">
+            <label class="ytdl-quality-item">
+              <input type="radio" name="mp3q" value="320"/>
+              <div class="ytdl-quality-card">
+                <span class="ytdl-q-num">320</span>
+                <span class="ytdl-q-unit">kbps</span>
+                <span class="ytdl-q-tag best">Best</span>
+              </div>
+            </label>
+            <label class="ytdl-quality-item">
+              <input type="radio" name="mp3q" value="192" checked/>
+              <div class="ytdl-quality-card">
+                <span class="ytdl-q-num">192</span>
+                <span class="ytdl-q-unit">kbps</span>
+                <span class="ytdl-q-tag high">High</span>
+              </div>
+            </label>
+            <label class="ytdl-quality-item">
+              <input type="radio" name="mp3q" value="128"/>
+              <div class="ytdl-quality-card">
+                <span class="ytdl-q-num">128</span>
+                <span class="ytdl-q-unit">kbps</span>
+                <span class="ytdl-q-tag std">Standard</span>
+              </div>
+            </label>
+            <label class="ytdl-quality-item">
+              <input type="radio" name="mp3q" value="64"/>
+              <div class="ytdl-quality-card">
+                <span class="ytdl-q-num">64</span>
+                <span class="ytdl-q-unit">kbps</span>
+                <span class="ytdl-q-tag low">Small</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- MP4 quality -->
+        <div id="ytdl-mp4-options" class="ytdl-options hidden">
+          <p class="ytdl-option-label">Video Quality</p>
+          <div class="ytdl-quality-grid">
+            <label class="ytdl-quality-item">
+              <input type="radio" name="mp4q" value="2160"/>
+              <div class="ytdl-quality-card">
+                <span class="ytdl-q-num">4K</span>
+                <span class="ytdl-q-unit">2160p</span>
+                <span class="ytdl-q-tag best" style="background:rgba(124,58,237,0.15);color:#a78bfa">Ultra HD</span>
+              </div>
+            </label>
+            <label class="ytdl-quality-item">
+              <input type="radio" name="mp4q" value="1080"/>
+              <div class="ytdl-quality-card">
+                <span class="ytdl-q-num">1080</span>
+                <span class="ytdl-q-unit">p</span>
+                <span class="ytdl-q-tag best">Full HD</span>
+              </div>
+            </label>
+            <label class="ytdl-quality-item">
+              <input type="radio" name="mp4q" value="720" checked/>
+              <div class="ytdl-quality-card">
+                <span class="ytdl-q-num">720</span>
+                <span class="ytdl-q-unit">p</span>
+                <span class="ytdl-q-tag high">HD</span>
+              </div>
+            </label>
+            <label class="ytdl-quality-item">
+              <input type="radio" name="mp4q" value="480"/>
+              <div class="ytdl-quality-card">
+                <span class="ytdl-q-num">480</span>
+                <span class="ytdl-q-unit">p</span>
+                <span class="ytdl-q-tag std">SD</span>
+              </div>
+            </label>
+            <label class="ytdl-quality-item">
+              <input type="radio" name="mp4q" value="360"/>
+              <div class="ytdl-quality-card">
+                <span class="ytdl-q-num">360</span>
+                <span class="ytdl-q-unit">p</span>
+                <span class="ytdl-q-tag low">Low</span>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-full ytdl-dl-btn" id="ytdl-download-btn" style="margin-top:1.5rem">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span id="ytdl-dl-btn-text">Download MP3</span>
+      </button>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="card hidden" id="ytdl-progress-card">
+      <div class="ytdl-progress-inner">
+        <div class="ytdl-progress-icon-wrap">
+          <div class="ytdl-progress-spinner"></div>
+          <svg class="ytdl-progress-dl-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+        <div style="flex:1">
+          <div class="ytdl-progress-label" id="ytdl-progress-label">Starting download…</div>
+          <div class="progress-bar-wrap" style="margin:.75rem 0 0.25rem">
+            <div class="progress-bar" id="ytdl-prog-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+              <div class="progress-fill ytdl-prog-fill" id="ytdl-prog-fill"></div>
+            </div>
+            <span class="progress-pct" id="ytdl-prog-pct">0%</span>
+          </div>
+          <div class="progress-track-status" id="ytdl-progress-status">Initialising yt-dlp…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div class="card hidden" id="ytdl-result-card">
+      <div class="ytdl-result-inner">
+        <div class="ytdl-result-check">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="ytdl-result-text">
+          <div class="ytdl-result-title" id="ytdl-result-title">Your file is ready!</div>
+          <div class="ytdl-result-meta" id="ytdl-result-meta"></div>
+        </div>
+        <a id="ytdl-result-link" href="#" class="btn btn-primary ytdl-dl-final-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Save File
+        </a>
+      </div>
+      <button class="btn btn-ghost btn-full" id="ytdl-reset-btn" style="margin-top:.875rem">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4"/></svg>
+        Download another video
+      </button>
+    </div>
+
+    <!-- ERROR -->
+    <div class="card hidden" id="ytdl-error-card">
+      <div class="ytdl-error-inner">
+        <div class="ytdl-error-icon">⚠️</div>
+        <div>
+          <div class="ytdl-result-title" style="color:#f87171">Download Failed</div>
+          <div class="ytdl-result-meta" id="ytdl-error-msg">An unexpected error occurred.</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-full" id="ytdl-retry-btn" style="margin-top:1rem">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4"/></svg>
+        Try again
+      </button>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="how-it-works" style="margin-top:3rem">
+      <h2 class="section-title">Why use YT Downloader?</h2>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num" style="-webkit-text-fill-color:unset;color:#ff4444">⚡</div>
+          <h3>Fast Downloads</h3>
+          <p>Direct yt-dlp backend — no slow third-party redirect servers.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num" style="-webkit-text-fill-color:unset;color:#ff8800">🎧</div>
+          <h3>MP3 up to 320 kbps</h3>
+          <p>High-quality audio encoded with ffmpeg at your chosen bitrate.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num" style="-webkit-text-fill-color:unset;color:#f59e0b">🎬</div>
+          <h3>MP4 up to 1080p</h3>
+          <p>Download full HD video with merged audio track.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num" style="-webkit-text-fill-color:unset;color:#34d399">🔒</div>
+          <h3>No Account Needed</h3>
+          <p>No sign-in, no tracking. Files are auto-deleted after 1 hour.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <footer class="footer">
+    <p>Tunexa Downloader · Powered by yt-dlp &amp; ffmpeg · Files auto-deleted after 1 hour<br/>
+    For personal use only. Respect copyright laws in your country.</p>
+  </footer>
+
+  <script src="ytdl.js"></script>
+</body>
+</html>
