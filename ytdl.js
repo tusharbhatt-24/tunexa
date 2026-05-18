@@ -298,7 +298,13 @@ async function startDownload() {
 
   if (isPlaylist) {
     const checkboxes = document.querySelectorAll('.track-checkbox');
-    const checkedIds = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.dataset.id);
+    let checkedIds = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.dataset.id);
+    
+    if (checkedIds.length > 100) {
+      toast('Notice: Tunexa supports downloading up to 100 tracks at a time. The first 100 selected tracks will be processed.', 'warning', 6000);
+      checkedIds = checkedIds.slice(0, 100);
+    }
+    
     reqBody.video_ids = checkedIds;
     reqBody.playlist_title = playlistTitle;
   }
@@ -412,5 +418,87 @@ async function apiFetch(path, { method = 'GET', body } = {}) {
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.message || data.detail || `Error ${res.status}`);
   return data;
+}
+
+/* ── SETTINGS MODAL CONTROLS ──────────────────── */
+const settingsModal = document.getElementById('settings-modal');
+const settingsBtn = document.getElementById('nav-settings-btn');
+const settingsCloseBtn = document.getElementById('settings-close-btn');
+const settingsCancelBtn = document.getElementById('settings-cancel-btn');
+const settingsSaveBtn = document.getElementById('settings-save-btn');
+const settingsClientId = document.getElementById('spotify-client-id-input');
+const settingsClientSecret = document.getElementById('spotify-client-secret-input');
+
+if (settingsBtn && settingsModal) {
+  // Open settings
+  settingsBtn.addEventListener('click', async () => {
+    settingsModal.classList.remove('hidden');
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/settings/spotify`);
+      const data = await res.json();
+      if (data.client_id) {
+        settingsClientId.value = data.client_id;
+      } else {
+        settingsClientId.value = '';
+      }
+      if (data.client_secret_masked) {
+        settingsClientSecret.value = data.client_secret_masked;
+        settingsClientSecret.placeholder = 'Credentials saved';
+      } else {
+        settingsClientSecret.value = '';
+        settingsClientSecret.placeholder = 'Paste your Spotify Client Secret...';
+      }
+    } catch (err) {
+      toast('Failed to load settings from server', 'error');
+    }
+  });
+
+  // Close helper
+  const closeSettings = () => {
+    settingsModal.classList.add('hidden');
+  };
+
+  settingsCloseBtn.addEventListener('click', closeSettings);
+  settingsCancelBtn.addEventListener('click', closeSettings);
+  settingsModal.addEventListener('click', (e) => {
+    if (e.target === settingsModal) closeSettings();
+  });
+
+  // Save settings
+  settingsSaveBtn.addEventListener('click', async () => {
+    const cid = settingsClientId.value.trim();
+    const csec = settingsClientSecret.value.trim();
+    
+    if (!cid || !csec) {
+      toast('Please fill in both fields', 'error');
+      return;
+    }
+    
+    // If client secret is still masked, don't send asterisks
+    if (csec.includes('***')) {
+      toast('Spotify secret already saved. If changing, type a new secret.', 'warning');
+      return;
+    }
+
+    settingsSaveBtn.disabled = true;
+    settingsSaveBtn.textContent = 'Saving...';
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/settings/spotify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ client_id: cid, client_secret: csec }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Failed to save settings');
+      toast('Spotify API credentials saved successfully!', 'success');
+      closeSettings();
+    } catch (err) {
+      toast(err.message || 'Failed to save settings', 'error');
+    } finally {
+      settingsSaveBtn.disabled = false;
+      settingsSaveBtn.textContent = 'Save Settings';
+    }
+  });
 }
 

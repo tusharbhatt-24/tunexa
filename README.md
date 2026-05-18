@@ -49,12 +49,7 @@ pip install -r requirements.txt
 Launch the FastAPI uvicorn server in your terminal:
 ```bash
 uvicorn main:app --reload --port 8000
-```
 
-### 4. Run the Web Interface 🌐
-Open your browser and navigate to:
-```url
-http://localhost:8000/ui/index.html
 ```
 
 ---

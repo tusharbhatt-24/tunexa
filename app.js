@@ -211,8 +211,17 @@ function updateMatchSummary() {
   const matched = state.matchResults.filter(r => r.status === 'matched' || r.status === 'resolved').length;
   const unmatched = state.matchResults.filter(r => r.status === 'unmatched').length;
   const skipped = state.matchResults.filter(r => r.status === 'skipped').length;
-  $('match-summary').innerHTML =
-    `<strong>${matched}</strong> matched &nbsp;·&nbsp; <strong>${unmatched}</strong> unmatched &nbsp;·&nbsp; <strong>${skipped}</strong> skipped`;
+  
+  let html = `<strong>${matched}</strong> matched &nbsp;·&nbsp; <strong>${unmatched}</strong> unmatched &nbsp;·&nbsp; <strong>${skipped}</strong> skipped`;
+  
+  if (state.matchResults.length > 100) {
+    html += `<div style="margin-top: 0.5rem; color: #ff8800; font-size: 0.8rem; font-weight: 500; display: flex; align-items: center; gap: 0.35rem; justify-content: center;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Note: You can sync/download up to 100 songs at a time. The first 100 matched tracks will be processed.
+    </div>`;
+  }
+  
+  $('match-summary').innerHTML = html;
 }
 
 // Filter tabs
@@ -406,12 +415,17 @@ async function handleDestinationSelect(dest) {
 
 /* ── STEP 4: TRANSFER / PROGRESS ─────────────── */
 async function startTransfer() {
+  let matched = state.matchResults.filter(r => r.status === 'matched' || r.status === 'resolved');
+
+  if (matched.length > 100) {
+    toast('Notice: Tunexa supports downloading/syncing up to 100 tracks at a time. The first 100 tracks have been queued.', 'warning', 6000);
+    matched = matched.slice(0, 100);
+  }
+
   showStep('results');
   $('progress-view').style.display = '';
   $('results-view').classList.add('hidden');
   setProgress(0, 'Starting…');
-
-  const matched = state.matchResults.filter(r => r.status === 'matched' || r.status === 'resolved');
 
   const body = {
     playlist_name: state.playlistName,
@@ -582,4 +596,86 @@ function escHtml(str) {
   return String(str ?? '')
     .replace(/&/g, '&amp;').replace(/</g, '&lt;')
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/* ── SETTINGS MODAL CONTROLS ──────────────────── */
+const settingsModal = document.getElementById('settings-modal');
+const settingsBtn = document.getElementById('nav-settings-btn');
+const settingsCloseBtn = document.getElementById('settings-close-btn');
+const settingsCancelBtn = document.getElementById('settings-cancel-btn');
+const settingsSaveBtn = document.getElementById('settings-save-btn');
+const settingsClientId = document.getElementById('spotify-client-id-input');
+const settingsClientSecret = document.getElementById('spotify-client-secret-input');
+
+if (settingsBtn && settingsModal) {
+  // Open settings
+  settingsBtn.addEventListener('click', async () => {
+    settingsModal.classList.remove('hidden');
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/settings/spotify`);
+      const data = await res.json();
+      if (data.client_id) {
+        settingsClientId.value = data.client_id;
+      } else {
+        settingsClientId.value = '';
+      }
+      if (data.client_secret_masked) {
+        settingsClientSecret.value = data.client_secret_masked;
+        settingsClientSecret.placeholder = 'Credentials saved';
+      } else {
+        settingsClientSecret.value = '';
+        settingsClientSecret.placeholder = 'Paste your Spotify Client Secret...';
+      }
+    } catch (err) {
+      toast('Failed to load settings from server', 'error');
+    }
+  });
+
+  // Close helper
+  const closeSettings = () => {
+    settingsModal.classList.add('hidden');
+  };
+
+  settingsCloseBtn.addEventListener('click', closeSettings);
+  settingsCancelBtn.addEventListener('click', closeSettings);
+  settingsModal.addEventListener('click', (e) => {
+    if (e.target === settingsModal) closeSettings();
+  });
+
+  // Save settings
+  settingsSaveBtn.addEventListener('click', async () => {
+    const cid = settingsClientId.value.trim();
+    const csec = settingsClientSecret.value.trim();
+    
+    if (!cid || !csec) {
+      toast('Please fill in both fields', 'error');
+      return;
+    }
+    
+    // If client secret is still masked, don't send asterisks
+    if (csec.includes('***')) {
+      toast('Spotify secret already saved. If changing, type a new secret.', 'warning');
+      return;
+    }
+
+    settingsSaveBtn.disabled = true;
+    settingsSaveBtn.textContent = 'Saving...';
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/settings/spotify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ client_id: cid, client_secret: csec }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Failed to save settings');
+      toast('Spotify API credentials saved successfully!', 'success');
+      closeSettings();
+    } catch (err) {
+      toast(err.message || 'Failed to save settings', 'error');
+    } finally {
+      settingsSaveBtn.disabled = false;
+      settingsSaveBtn.textContent = 'Save Settings';
+    }
+  });
 }

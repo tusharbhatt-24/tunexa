@@ -32,9 +32,15 @@
       <div class="nav-links">
         <a href="index.html" class="nav-tab-btn">Playlist Transfer</a>
         <a href="ytdl.html" class="nav-tab-btn active">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088C19.537 3.616 12 3.616 12 3.616s-7.537 0-9.407.501A3.007 3.007 0 0 0 .505 6.205 31.247 31.247 0 0 0 0 12a31.247 31.247 0 0 0 .505 5.795 3.007 3.007 0 0 0 2.088 2.088C4.463 20.384 12 20.384 12 20.384s7.537 0 9.407-.501a3.007 3.007 0 0 0 2.088-2.088A31.247 31.247 0 0 0 24 12a31.247 31.247 0 0 0-.505-5.795zM9.609 15.601V8.408l6.264 3.602z"/></svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle; margin-right: 4px;"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088C19.537 3.616 12 3.616 12 3.616s-7.537 0-9.407.501A3.007 3.007 0 0 0 .505 6.205 31.247 31.247 0 0 0 0 12a31.247 31.247 0 0 0 .505 5.795 3.007 3.007 0 0 0 2.088 2.088C4.463 20.384 12 20.384 12 20.384s7.537 0 9.407-.501a3.007 3.007 0 0 0 2.088-2.088A31.247 31.247 0 0 0 24 12a31.247 31.247 0 0 0-.505-5.795zM9.609 15.601V8.408l6.264 3.602z"/></svg>
           YT Downloader
         </a>
+        <button id="nav-settings-btn" class="nav-tab-btn" style="background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.35rem; font-family: inherit;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          Settings
+        </button>
       </div>
     </div>
   </nav>
@@ -292,6 +298,39 @@
   </main>
 
   <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <!-- SETTINGS MODAL -->
+  <div id="settings-modal" class="modal-overlay hidden">
+    <div class="card" style="width: 100%; max-width: 480px; margin: 1rem; border: 1px solid rgba(255,255,255,0.08); background: rgba(18,18,18,0.95); position: relative; padding: 2rem;">
+      <button id="settings-close-btn" style="position: absolute; top: 1.25rem; right: 1.25rem; background: none; border: none; color: #a0aec0; cursor: pointer; padding: 0.25rem;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem; color: #fff;">Tunexa Settings</h2>
+      <p style="font-size: 0.85rem; color: #a0aec0; margin-bottom: 1.5rem; line-height: 1.4;">
+        Add your Spotify API Developer credentials to enable parsing playlists with <strong>unlimited songs</strong> (bypasses the credentials-free 100 song limit).
+      </p>
+      
+      <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+          <label style="display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #a0aec0; margin-bottom: 0.35rem;">Spotify Client ID</label>
+          <input type="text" id="spotify-client-id-input" class="url-input" placeholder="Paste your Spotify Client ID..." style="width: 100%; box-sizing: border-box;" autocomplete="off"/>
+        </div>
+        <div>
+          <label style="display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #a0aec0; margin-bottom: 0.35rem;">Spotify Client Secret</label>
+          <input type="password" id="spotify-client-secret-input" class="url-input" placeholder="Paste your Spotify Client Secret..." style="width: 100%; box-sizing: border-box;" autocomplete="off"/>
+        </div>
+      </div>
+      
+      <div style="font-size: 0.75rem; color: #718096; line-height: 1.5; margin-bottom: 1.5rem; padding: 0.75rem; background: rgba(255,255,255,0.03); border-radius: 6px; border: 1px solid rgba(255,255,255,0.04);">
+        <strong>How to get keys:</strong> Go to the free <a href="https://developer.spotify.com/dashboard" target="_blank" style="color: #ff4444; text-decoration: underline;">Spotify Developer Dashboard</a>, create an App, and set the Redirect URI to <code>http://localhost:8000/api/oauth/spotify/callback</code>.
+      </div>
+      
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button id="settings-cancel-btn" class="btn btn-ghost">Cancel</button>
+        <button id="settings-save-btn" class="btn btn-primary">Save Settings</button>
+      </div>
+    </div>
+  </div>
 
   <footer class="footer">
     <p>Tunexa Downloader · Powered by yt-dlp &amp; ffmpeg · Files auto-deleted after 1 hour<br/>

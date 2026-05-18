@@ -8,6 +8,9 @@ from pathlib import Path
 from typing import Optional, List
 from contextlib import asynccontextmanager
 
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env if present
+
 from fastapi import FastAPI, HTTPException, Depends, Header, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -148,6 +151,53 @@ def require_token(token: Optional[str] = Depends(get_token)):
 @app.get("/api/health")
 def health():
     return {"status": "ok", "spotipy": SPOTIPY_OK, "ytmusicapi": YTMUSIC_OK}
+
+# ── ROUTE: SETTINGS ────────────────────────────
+class SpotifySettingsRequest(BaseModel):
+    client_id: str
+    client_secret: str
+
+@app.get("/api/settings/spotify")
+def get_spotify_settings():
+    masked_secret = ""
+    if SPOTIFY_CLIENT_SECRET:
+        if len(SPOTIFY_CLIENT_SECRET) > 4:
+            masked_secret = SPOTIFY_CLIENT_SECRET[:4] + "*" * (len(SPOTIFY_CLIENT_SECRET) - 4)
+        else:
+            masked_secret = "*" * len(SPOTIFY_CLIENT_SECRET)
+    return {
+        "client_id": SPOTIFY_CLIENT_ID,
+        "client_secret_masked": masked_secret,
+        "is_configured": bool(SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET)
+    }
+
+@app.post("/api/settings/spotify")
+def save_spotify_settings(req: SpotifySettingsRequest):
+    global SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET
+    env_path = Path(__file__).parent / ".env"
+    lines = []
+    if env_path.exists():
+        with open(env_path, "r") as f:
+            lines = f.readlines()
+            
+    new_lines = []
+    for line in lines:
+        stripped = line.strip()
+        if not stripped.startswith("SPOTIFY_CLIENT_ID=") and not stripped.startswith("SPOTIFY_CLIENT_SECRET="):
+            new_lines.append(line)
+            
+    new_lines.append(f"SPOTIFY_CLIENT_ID={req.client_id}\n")
+    new_lines.append(f"SPOTIFY_CLIENT_SECRET={req.client_secret}\n")
+    
+    with open(env_path, "w") as f:
+        f.writelines(new_lines)
+        
+    # Reload environment variables
+    load_dotenv(env_path, override=True)
+    SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID", "")
+    SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET", "")
+    
+    return {"status": "success", "message": "Spotify API credentials updated successfully"}
 
 # ── ROUTE: FETCH PLAYLIST ──────────────────────
 @app.post("/api/fetch-playlist")
