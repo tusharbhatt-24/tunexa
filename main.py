@@ -793,7 +793,7 @@ def ytdl_download(req: YTDLDownloadRequest):
     job_dir = DOWNLOAD_DIR / 'ytdl' / job_id
     job_dir.mkdir(parents=True, exist_ok=True)
     
-    is_playlist_job = bool(req.video_ids)
+    is_playlist_job = bool(req.video_ids) and len(req.video_ids) > 1
     ytdl_jobs[job_id] = {
         'id': job_id, 'status': 'queued', 'progress': 0,
         'format': req.format, 'quality': req.quality,
@@ -810,9 +810,10 @@ def ytdl_download(req: YTDLDownloadRequest):
             daemon=True
         )
     else:
+        url_to_download = req.video_ids[0] if (req.video_ids and len(req.video_ids) == 1) else req.url
         t = threading.Thread(
             target=_run_ytdl_job,
-            args=(job_id, req.url, req.format, req.quality, job_dir),
+            args=(job_id, url_to_download, req.format, req.quality, job_dir),
             daemon=True
         )
     t.start()
@@ -936,6 +937,7 @@ def _run_ytdl_job(job_id: str, url: str, fmt: str, quality: int, job_dir: Path):
         job['status'] = 'complete'
         job['file_path'] = str(out_file)
         job['file_size'] = out_file.stat().st_size
+        job['title'] = out_file.stem
         job['completed_at'] = time.time()
 
     except yt_dlp.utils.DownloadError as e:
@@ -1051,6 +1053,7 @@ def _run_ytdl_playlist_job(job_id: str, video_ids: List[str], fmt: str, quality:
         job['status'] = 'complete'
         job['file_path'] = str(zip_path)
         job['file_size'] = zip_path.stat().st_size
+        job['title'] = playlist_title or "playlist"
         job['completed_at'] = time.time()
     except Exception as e:
         job['status'] = 'failed'

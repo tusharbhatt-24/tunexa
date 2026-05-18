@@ -360,17 +360,18 @@ function showResult(job) {
   hideAll(progressCard, errorCard);
   show(resultCard);
 
-  const isZip = job.file_path && job.file_path.endsWith('.zip');
+  const isZip = job.is_playlist;
   const ext  = isZip ? 'zip' : (job.format || currentType);
   const size = fmtBytes(job.file_size);
   
+  const displayTitle = job.title || currentTitle;
   $('ytdl-result-title').textContent = isZip ? `Your Playlist ZIP is ready!` : `Your ${ext.toUpperCase()} is ready!`;
-  $('ytdl-result-meta').textContent  = [currentTitle, size].filter(Boolean).join(' · ');
+  $('ytdl-result-meta').textContent  = [displayTitle, size].filter(Boolean).join(' · ');
 
   const link = $('ytdl-result-link');
   link.href = `${BACKEND_URL}/api/ytdl/jobs/${currentJobId}/file`;
   
-  const cleanTitle = currentTitle.replace(/[^\w\s-]/g,'').trim();
+  const cleanTitle = displayTitle.replace(/[^\w\s-]/g,'').trim();
   link.download = `${cleanTitle}.${ext}`;
   link.textContent = '';
   link.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Save ${isZip ? 'Playlist ZIP' : ext.toUpperCase()}`;
